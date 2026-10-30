@@ -9,9 +9,11 @@ crop_name = input("Enter crop name: ").strip()
 moisture = float(input("Enter soil moisture (%): "))
 temperature = float(input("Enter soil temperature (°C): "))
 
-moisture_status = classify_moisture(moisture)
-temperature_status = classify_temperature(temperature)
 def display_crop_report(crop_name, moisture, temperature):
+    
+    moisture_status = classify_moisture(moisture)
+    temperature_status = classify_temperature(temperature)
+
     print("\n--- Monitoring Report ---")
 
     if not crop_name:
@@ -30,3 +32,4 @@ def display_crop_report(crop_name, moisture, temperature):
         else:
             print("Result: One or more readings are outside example ranges.")
 display_crop_report(crop_name, moisture, temperature)
+

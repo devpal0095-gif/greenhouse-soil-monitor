@@ -97,7 +97,6 @@ The current program uses illustrative ranges for learning Python conditional sta
 
 ## Future Improvements
 
-- [ ] Refactor monitoring logic into reusable Python functions.
 - [ ] Add crop-specific monitoring configurations.
 - [ ] Improve handling of invalid and nonnumeric inputs.
 - [ ] Save monitoring records to CSV files.
@@ -108,7 +107,7 @@ The current program uses illustrative ranges for learning Python conditional sta
 
 ## Project Status
 
-**In Development — Day 4 Python Learning Project**
+**In Development — Day 5 Python Fundamentals**
 
 Currently focused on conditional statements, logical operators, and input validation.
 
