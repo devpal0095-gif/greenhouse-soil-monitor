@@ -1,6 +1,7 @@
 
 from soil_moisture_monitor import classify_moisture
 from soil_temperature_monitor import classify_temperature
+from data_storage import save_crop_data, load_crop_data
 
 
 def display_crop_report(crop_name, moisture, temperature):
@@ -23,25 +24,50 @@ def display_crop_report(crop_name, moisture, temperature):
     else:
         print("Result: One or more readings are outside example ranges.")
 
+def collect_crop_data():
 
-greenhouse_crops = [
-    {"name": "Tomato", "moisture": 45, "temperature": 22},
-    {"name": "Pepper", "moisture": 25, "temperature": 28},
-    {"name": "Cucumber", "moisture": 75, "temperature": 20},
-    {"name": "Lettuce", "moisture": 25, "temperature": 28},
-    {"name": "Strawberry", "moisture": 75, "temperature": 20}
-]
+    greenhouse_crops = []
+
+    number_of_crops = int(input("How many crops do you want to monitor? "))
+
+    for i in range(number_of_crops):
+        print(f"\n--- Enter Crop{i + 1} Information---")
+        crop_name = input("Enter crop name: ").strip()
+        moisture = float(input("Enter soil moisture (%): "))
+        temperature = float(input("Enter soil temperature (°C): "))
+
+        crop = {
+            "name": crop_name,
+            "moisture": moisture,
+            "temperature": temperature
+        }
+
+        greenhouse_crops.append(crop)
+
+    return greenhouse_crops
 
 
 if __name__ == "__main__":
 
     print("=== Greenhouse Soil Monitoring System ===")
 
+     # Step 1: Collect new readings
+    greenhouse_crops = collect_crop_data()
+
+    # Step 2: Save readings to CSV
+    save_crop_data(greenhouse_crops)
+
+    # Step 3: Load readings from CSV
+    saved_crops = load_crop_data()
+
+    print("\nCrop data loaded successfully!")
+
     alert_count = 0
     lowest_moisture = None
     lowest_moisture_crop = None
-
-    for crop in greenhouse_crops:
+    
+    # Step 4: Analyze loaded crop records
+    for crop in saved_crops:
 
         display_crop_report(
             crop["name"],
@@ -54,15 +80,16 @@ if __name__ == "__main__":
         moisture_status = classify_moisture(moisture)
         temperature_status = classify_temperature(crop["temperature"])
 
-        # Challenge B: Count crops requiring attention
+        # Count crops requiring attention
         if moisture_status != "MODERATE" or temperature_status != "MODERATE":
             alert_count += 1
 
-        # Challenge C: Find lowest valid moisture
+        # Find lowest valid moisture
         if moisture_status != "INVALID":
             if lowest_moisture is None or moisture < lowest_moisture:
                 lowest_moisture = moisture
                 lowest_moisture_crop = crop["name"]
+        
 
     # Final monitoring summary
     print("\n=== Greenhouse Summary ===")
@@ -74,3 +101,5 @@ if __name__ == "__main__":
         print(f"Moisture: {lowest_moisture}%")
     else:
         print("No valid moisture readings found.")
+    
+    

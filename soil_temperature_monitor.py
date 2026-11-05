@@ -8,9 +8,3 @@ def classify_temperature(temperature):
         return "MODERATE"
     else:
         return "HIGH"
-
-
-if __name__ == "__main__":
-    temperature = float(input("Enter soil temperature (°C): "))
-    status = classify_temperature(temperature)
-    print(f"Temperature status: {status}")

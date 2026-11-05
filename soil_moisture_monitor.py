@@ -9,8 +9,3 @@ def classify_moisture(moisture):
     else:
         return "HIGH"
 
-
-if __name__ == "__main__":
-    moisture = float(input("Enter soil moisture (%): "))
-    status = classify_moisture(moisture)
-    print(f"Moisture status: {status}")
