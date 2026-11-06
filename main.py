@@ -3,6 +3,7 @@ from soil_moisture_monitor import classify_moisture
 from soil_temperature_monitor import classify_temperature
 from data_storage import save_crop_data, load_crop_data
 
+import math
 
 def display_crop_report(crop_name, moisture, temperature):
 
@@ -24,17 +25,48 @@ def display_crop_report(crop_name, moisture, temperature):
     else:
         print("Result: One or more readings are outside example ranges.")
 
+def get_valid_crop_count():
+
+        while True:
+            try:
+                number_of_crops = int(input("How many crops do you want to monitor? "))
+                
+                if number_of_crops >= 1:
+                    
+                    return number_of_crops
+                
+                print("Please enter at least one crop.")
+
+            except ValueError:
+                print("Please enter a valid whole number.")
+
+def get_valid_sensor_reading(prompt, minimum, maximum):
+
+    while True:
+        try:
+            value = float(input(prompt))
+
+            if math.isfinite(value) and minimum <= value <= maximum:
+                return value
+
+            print(f"Please enter a finite number between {minimum} and {maximum}.")
+
+        except ValueError:
+            print("Invalid input. Please enter a number.")
+
 def collect_crop_data():
 
     greenhouse_crops = []
 
-    number_of_crops = int(input("How many crops do you want to monitor? "))
+    # number_of_crops = int(input("How many crops do you want to monitor? "))
+
+    number_of_crops = get_valid_crop_count()
 
     for i in range(number_of_crops):
         print(f"\n--- Enter Crop{i + 1} Information---")
         crop_name = input("Enter crop name: ").strip()
-        moisture = float(input("Enter soil moisture (%): "))
-        temperature = float(input("Enter soil temperature (°C): "))
+        moisture = get_valid_sensor_reading("Enter soil moisture (%)", 0, 100)
+        temperature = get_valid_sensor_reading("Enter soil temperature (°C)", -50, 80)
 
         crop = {
             "name": crop_name,
@@ -93,7 +125,7 @@ if __name__ == "__main__":
 
     # Final monitoring summary
     print("\n=== Greenhouse Summary ===")
-    print(f"Total crops monitored: {len(greenhouse_crops)}")
+    print(f"Total crops monitored: {len(saved_crops)}")
     print(f"Crops requiring attention: {alert_count}")
 
     if lowest_moisture_crop is not None:
