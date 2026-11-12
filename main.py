@@ -1,8 +1,9 @@
 
 from soil_moisture_monitor import classify_moisture
 from soil_temperature_monitor import classify_temperature
-from data_storage import save_crop_data, load_crop_data
+from data_storage import save_crop_data, load_crop_data, append_crop_data
 
+from datetime import datetime
 import math
 
 def display_crop_report(crop_name, moisture, temperature):
@@ -24,6 +25,16 @@ def display_crop_report(crop_name, moisture, temperature):
         print("Result: Both readings are within example ranges.")
     else:
         print("Result: One or more readings are outside example ranges.")
+
+def get_valid_crop_name():
+
+    while True:
+        crop_name = input("Enter crop name: ").strip()
+
+        if crop_name:
+            return crop_name
+
+        print("Crop name cannot be empty.")
 
 def get_valid_crop_count():
 
@@ -64,19 +75,40 @@ def collect_crop_data():
 
     for i in range(number_of_crops):
         print(f"\n--- Enter Crop{i + 1} Information---")
-        crop_name = input("Enter crop name: ").strip()
+        crop_name = get_valid_crop_name()
         moisture = get_valid_sensor_reading("Enter soil moisture (%)", 0, 100)
         temperature = get_valid_sensor_reading("Enter soil temperature (°C)", -50, 80)
 
+        # Create a new record with a timestamp
         crop = {
+            "timestamp": get_timestamp(),
             "name": crop_name,
             "moisture": moisture,
             "temperature": temperature
         }
 
-        greenhouse_crops.append(crop)
+        # Save the reading to historical CSV
+        append_crop_data(crop)
+
+        # Keep the crop data for the current monitoring session
+       
+        greenhouse_crops.append({
+            "name": crop_name,
+            "moisture": moisture,
+            "temperature": temperature
+        })
 
     return greenhouse_crops
+
+def get_timestamp():
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return timestamp
+
+def calculate_average_moisture(readings):
+    if not readings:
+        return None
+
+    return sum(readings) / len(readings)
 
 
 if __name__ == "__main__":
@@ -92,6 +124,13 @@ if __name__ == "__main__":
     # Step 3: Load readings from CSV
     saved_crops = load_crop_data()
 
+    moisture_readings = [
+        crop["moisture"] for crop in saved_crops
+    ]
+
+    average_moisture = calculate_average_moisture(moisture_readings)
+
+    
     print("\nCrop data loaded successfully!")
 
     alert_count = 0
@@ -133,5 +172,11 @@ if __name__ == "__main__":
         print(f"Moisture: {lowest_moisture}%")
     else:
         print("No valid moisture readings found.")
+
+    if average_moisture is not None:
+        print(f"Average moisture: {average_moisture:.2f}%")
+    else:
+        print("No moisture readings available.")
+
     
     
